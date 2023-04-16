@@ -11,7 +11,7 @@ function createStyle(require: Function, exports: any): void {
     .ace_editor {
       min-width: 100%;
       min-height: 100%;
-
+      background-color: ${color.black}
     }
     .ace_scroller {
       margin: 30px 0 0;

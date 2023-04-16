@@ -1,6 +1,7 @@
 import { useAppStore } from "@/stores/AppStore";
 import { ReactElement, useCallback } from "react";
 import AceEditor from "react-ace";
+import typer from "@/utils/typer";
 
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-json";
@@ -8,17 +9,18 @@ import "ace-builds/src-noconflict/mode-typescript";
 import "@/components/editor/style";
 
 const MainEditor = (): ReactElement => {
-  const { mainEditorContent, singleChange } = useAppStore();
+  const { mainEditorContent, singleChange, inputType } = useAppStore();
 
   const onChange = useCallback(
     (value: string) => singleChange("mainEditorContent", value),
     [singleChange]
   );
+
   return (
     <div className="w-full flex-grow">
       <AceEditor
         theme="customTheme"
-        mode="javascript"
+        mode={inputType}
         value={mainEditorContent}
         width={"100%"}
         onChange={onChange}

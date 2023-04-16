@@ -32,7 +32,22 @@ const AppContainer = (): ReactElement => {
             />
           </div>
         </div>
-        <MainEditor />
+        <div className="w-full flex flex-grow">
+          <div
+            className={`${
+              hasExample ? "w-[30vw]" : "w-[50vw]"
+            } flex flex-grow h-full transform duration-200`}
+          >
+            <MainEditor />
+          </div>
+          <div
+            className={`${
+              hasExample ? "w-[30vw]" : "w-0"
+            } flex flex-grow h-full transform duration-200`}
+          >
+            <MainEditor />
+          </div>
+        </div>
       </div>
       <div
         className={`flex ${
