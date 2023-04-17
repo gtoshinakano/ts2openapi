@@ -4,8 +4,16 @@ import { useAppStore } from "@/stores/AppStore";
 import dynamic from "next/dynamic";
 import { ReactElement, useCallback } from "react";
 import Switch from "./ui/Switch";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import axios from "axios";
 
 const MainEditor = dynamic(() => import("./editor/MainEditor"), { ssr: false });
+const OutputEditor = dynamic(() => import("./editor/OutputEditor"), {
+  ssr: false,
+});
+
+const queryClient = new QueryClient();
 
 const AppContainer = (): ReactElement => {
   const { hasExample, singleToggle } = useAppStore();
@@ -15,7 +23,7 @@ const AppContainer = (): ReactElement => {
     [singleToggle]
   );
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <div
         className={`flex flex-col ${
           hasExample ? "w-[60vw]" : "w-[50vw]"
@@ -50,13 +58,22 @@ const AppContainer = (): ReactElement => {
         </div>
       </div>
       <div
-        className={`flex ${
+        className={`flex flex-col ${
           hasExample ? "w-[40vw]" : "w-[50vw]"
         } transform duration-200`}
       >
-        2
+        <Switch
+          label="EXAMPLE"
+          checked={hasExample}
+          name="example-toggler"
+          onChange={toggleExample}
+          reverse
+        />
+        <div className="w-full flex pl-10 py-5"></div>
+        <OutputEditor />
       </div>
-    </>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
 

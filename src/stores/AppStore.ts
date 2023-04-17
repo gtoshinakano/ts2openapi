@@ -1,4 +1,3 @@
-import typer from "@/utils/typer";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
@@ -11,6 +10,7 @@ export interface AppState {
   errorMessage: string;
   singleChange: (name: keyof AppState, value: string) => void;
   singleToggle: (name: keyof AppState) => void;
+  mainChange: (value: Partial<AppState>) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -27,6 +27,8 @@ export const useAppStore = create<AppState>()(
           set((state) => ({ ...state, [name]: value })),
         singleToggle: (name) =>
           set((state) => ({ ...state, [name]: !state[name] })),
+        mainChange: (value: Partial<AppState>) =>
+          set((state) => ({ ...state, ...value })),
       }),
       {
         name: "AppState",

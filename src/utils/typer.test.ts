@@ -76,4 +76,15 @@ describe("typer features", () => {
       expect(parsed).toEqual(expected);
     });
   });
+  describe("test outputs", () => {
+    it("return yml from type", () => {
+      const node = `
+        type MyType = {
+          reqField: string
+          optionalField?: number []
+        }
+      `;
+      console.log(typer(node));
+    });
+  });
 });

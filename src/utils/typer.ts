@@ -6,7 +6,7 @@ interface TyperConfig {}
 
 export default function typer(input: string): Partial<AppState> {
   const output: Partial<AppState> = {};
-  const json: any = { components: { schemas: {} } };
+  let json: Record<string, any> = {};
   const requiredItems: string[] = [];
 
   const sourceFile = ts.createSourceFile(
@@ -15,11 +15,19 @@ export default function typer(input: string): Partial<AppState> {
     ts.ScriptTarget.Latest,
     true
   );
-
-  const compilerHost = ts.createCompilerHost({});
+  const compilerOptions: ts.CompilerOptions = {
+    allowJs: true,
+    target: ts.ScriptTarget.Latest,
+    moduleResolution: ts.ModuleResolutionKind.Node16, // update this line
+    lib: ["es6", "dom"],
+    strict: true,
+    esModuleInterop: true,
+    skipLibCheck: true,
+  };
+  const compilerHost = ts.createCompilerHost(compilerOptions, true);
   const program = ts.createProgram({
     rootNames: ["temp.ts"],
-    options: { allowJs: true },
+    options: compilerOptions,
     host: compilerHost,
   });
 
@@ -41,9 +49,22 @@ export default function typer(input: string): Partial<AppState> {
 
   if (ts.isTypeAliasDeclaration(statement)) {
     variableName = statement.name.getText();
-    statement.type.forEachChild((node) =>
-      console.log("type =>", node.getText())
-    );
+    json.components = {};
+    json.components.schemas = {};
+    json.components.schemas[variableName] = {};
+    json.components.schemas[variableName].type = "object";
+    json.components.schemas[variableName].properties = {};
+    statement.type.forEachChild((node) => {
+      const isValid = node.getText().split(":").length === 2;
+      if (isValid) {
+        const { key, type, isArray, isRequired } = parseItem(node.getText());
+        json.components.schemas[variableName].properties[key] = {
+          type: isArray ? "array" : type,
+          items: isArray ? { type } : undefined,
+        };
+        if (isRequired) requiredItems.push(key);
+      }
+    });
   }
   if (ts.isInterfaceDeclaration(statement)) {
     let i = 0;
@@ -51,7 +72,12 @@ export default function typer(input: string): Partial<AppState> {
       if (i === 0) {
         variableName = node.getText();
         i++;
-      } else console.log("interface =>", node.getText());
+      } else {
+        json.components = {};
+        json.components.schemas = {};
+        json.components.schemas[variableName] = {};
+        json.components.schemas[variableName].type = "object";
+      }
     });
   }
   if (ts.isVariableStatement(statement)) {
@@ -64,7 +90,7 @@ export default function typer(input: string): Partial<AppState> {
     }
   }
 
-  // const yamlOutput = yaml.dump().
+  output.output = yaml.dump(json);
   return output;
 }
 
