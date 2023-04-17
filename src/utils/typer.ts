@@ -2,8 +2,6 @@ import * as ts from "typescript";
 import * as yaml from "js-yaml";
 import { AppState } from "@/stores/AppStore";
 
-interface TyperConfig {}
-
 export default function typer(input: string): Partial<AppState> {
   const output: Partial<AppState> = {};
   let json: Record<string, any> = {};
@@ -65,6 +63,7 @@ export default function typer(input: string): Partial<AppState> {
         if (isRequired) requiredItems.push(key);
       }
     });
+    json.components.schemas[variableName].required = requiredItems;
   }
   if (ts.isInterfaceDeclaration(statement)) {
     let i = 0;

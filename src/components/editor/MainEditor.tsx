@@ -1,5 +1,5 @@
 import { useAppStore } from "@/stores/AppStore";
-import { ReactElement, useCallback } from "react";
+import { ReactElement, useCallback, useState } from "react";
 import AceEditor from "react-ace";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -9,13 +9,25 @@ import "@/components/editor/style";
 const MainEditor = (): ReactElement => {
   const { mainEditorContent, inputType, singleChange } = useAppStore();
   const client = useQueryClient();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>();
+
+  const fetchDebouncedData = useCallback(async () => {
+    client.fetchQuery(["main-editor-parsed"]);
+  }, [client]);
 
   const onChange = useCallback(
     (value: string) => {
       singleChange("mainEditorContent", value);
-      client.fetchQuery(["main-editor-parsed"]);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      setTimeoutId(
+        setTimeout(() => {
+          fetchDebouncedData();
+        }, 1000)
+      );
     },
-    [singleChange, client]
+    [singleChange, timeoutId, fetchDebouncedData]
   );
 
   return (

@@ -48,6 +48,9 @@ function createStyle(require: Function, exports: any): void {
     .ace_name, .ace_class, .ace_string, .ace_numeric, .ace_attribute-value {
       color: ${color.lightPurple};
     }
+    .ace-line {
+      color: ${color.pink};
+    }
   `;
 
   exports.cssText = style;
