@@ -70,12 +70,24 @@ export default function typer(input: string): Partial<AppState> {
     statement.forEachChild((node) => {
       if (i === 0) {
         variableName = node.getText();
-        i++;
-      } else {
         json.components = {};
         json.components.schemas = {};
         json.components.schemas[variableName] = {};
         json.components.schemas[variableName].type = "object";
+        json.components.schemas[variableName].properties = {};
+        i++;
+      } else {
+        const isValid = node.getText().split(":").length === 2;
+        if (isValid) {
+          const { key, type, isArray, isRequired } = parseItem(node.getText());
+          json.components.schemas[variableName].properties[key] = {
+            type: isArray ? "array" : type,
+            items: isArray ? { type } : undefined,
+          };
+          if (isRequired) requiredItems.push(key);
+        }
+
+        json.components.schemas[variableName].required = requiredItems;
       }
     });
   }
@@ -140,3 +152,17 @@ export function parseItem(item: string): ParsedItem {
     isArray,
   };
 }
+
+export const typerWeb = (input: string) => {
+  const transpilationResult = ts.transpileModule(input, {
+    fileName: "codeSnippet.ts",
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ESNext,
+      allowJs: true,
+      jsx: ts.JsxEmit.React,
+    },
+  });
+
+  return transpilationResult?.diagnostics?.length === 0;
+};

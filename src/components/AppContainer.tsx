@@ -6,7 +6,7 @@ import { ReactElement, useCallback } from "react";
 import Switch from "./ui/Switch";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import axios from "axios";
+import HeaderNav from "@/components/HeaderNav";
 
 const MainEditor = dynamic(() => import("./editor/MainEditor"), { ssr: false });
 const OutputEditor = dynamic(() => import("./editor/OutputEditor"), {
@@ -24,51 +24,54 @@ const AppContainer = (): ReactElement => {
   );
   return (
     <QueryClientProvider client={queryClient}>
-      <div
-        className={`flex flex-col ${
-          hasExample ? "w-[60vw]" : "w-[50vw]"
-        } transform duration-200`}
-      >
-        <div className="w-full flex pl-10 py-5">
-          <div>
-            <Switch
-              label="EXAMPLE"
-              checked={hasExample}
-              name="example-toggler"
-              onChange={toggleExample}
-              reverse
-            />
+      <HeaderNav />
+      <div className="w-full h-full flex">
+        <div
+          className={`flex flex-col ${
+            hasExample ? "w-[60vw]" : "w-[50vw]"
+          } transform duration-200`}
+        >
+          <div className="w-full flex pl-10 py-5">
+            <div>
+              <Switch
+                label="EXAMPLE"
+                checked={hasExample}
+                name="example-toggler"
+                onChange={toggleExample}
+                reverse
+              />
+            </div>
+          </div>
+          <div className="w-full flex flex-grow">
+            <div
+              className={`${
+                hasExample ? "w-[30vw]" : "w-[50vw]"
+              } flex flex-grow h-full transform duration-200`}
+            >
+              <MainEditor />
+            </div>
+            <div
+              className={`${
+                hasExample ? "w-[30vw]" : "w-0"
+              } flex flex-grow h-full transform duration-200`}
+            ></div>
           </div>
         </div>
-        <div className="w-full flex flex-grow">
-          <div
-            className={`${
-              hasExample ? "w-[30vw]" : "w-[50vw]"
-            } flex flex-grow h-full transform duration-200`}
-          >
-            <MainEditor />
-          </div>
-          <div
-            className={`${
-              hasExample ? "w-[30vw]" : "w-0"
-            } flex flex-grow h-full transform duration-200`}
-          ></div>
+        <div
+          className={`flex flex-col ${
+            hasExample ? "w-[40vw]" : "w-[50vw]"
+          } transform duration-200`}
+        >
+          <Switch
+            label="EXAMPLE"
+            checked={hasExample}
+            name="example-toggler"
+            onChange={toggleExample}
+            reverse
+          />
+          <div className="w-full flex pl-10 py-5"></div>
+          <OutputEditor />
         </div>
-      </div>
-      <div
-        className={`flex flex-col ${
-          hasExample ? "w-[40vw]" : "w-[50vw]"
-        } transform duration-200`}
-      >
-        <Switch
-          label="EXAMPLE"
-          checked={hasExample}
-          name="example-toggler"
-          onChange={toggleExample}
-          reverse
-        />
-        <div className="w-full flex pl-10 py-5"></div>
-        <OutputEditor />
       </div>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

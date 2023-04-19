@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import typer, { parseItem } from "./typer";
+import * as yaml from "js-yaml";
 
 describe("typer features", () => {
   describe("validation behaviors", () => {
@@ -84,7 +85,46 @@ describe("typer features", () => {
           optionalField?: number []
         }
       `;
-      console.log(typer(node));
+      expect(typer(node).output).toEqual(
+        yaml.dump({
+          components: {
+            schemas: {
+              MyType: {
+                type: "object",
+                properties: {
+                  reqField: { type: "string" },
+                  optionalField: { type: "array", items: { type: "number" } },
+                },
+                required: ["reqField"],
+              },
+            },
+          },
+        })
+      );
+    });
+    it("return yml from interface", () => {
+      const node = `
+        interface MyInterface {
+          reqField: string
+          optionalField?: number []
+        }
+      `;
+      expect(typer(node).output).toEqual(
+        yaml.dump({
+          components: {
+            schemas: {
+              MyInterface: {
+                type: "object",
+                properties: {
+                  reqField: { type: "string" },
+                  optionalField: { type: "array", items: { type: "number" } },
+                },
+                required: ["reqField"],
+              },
+            },
+          },
+        })
+      );
     });
   });
 });

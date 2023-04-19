@@ -8,8 +8,8 @@ const roboto = Roboto({
 
 export default function Home() {
   return (
-    <main className={`flex flex-grow text-white ${roboto.className}`}>
-      <AppContainer></AppContainer>
+    <main className={`flex flex-col flex-grow text-white ${roboto.className}`}>
+      <AppContainer />
     </main>
   );
 }

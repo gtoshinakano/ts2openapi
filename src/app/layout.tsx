@@ -1,4 +1,3 @@
-import HeaderNav from "@/components/HeaderNav";
 import "./globals.css";
 
 export const metadata = {
@@ -15,7 +14,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col h-screen w-screen bg-zinc-800">
-        <HeaderNav />
         {children}
       </body>
     </html>

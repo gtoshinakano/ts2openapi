@@ -24,7 +24,7 @@ const MainEditor = (): ReactElement => {
       setTimeoutId(
         setTimeout(() => {
           fetchDebouncedData();
-        }, 1000)
+        }, 100)
       );
     },
     [singleChange, timeoutId, fetchDebouncedData]
